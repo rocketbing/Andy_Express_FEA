@@ -1,0 +1,310 @@
+/* 左侧导航栏容器 */
+.left-menu {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 20%;
+  background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+  color: white;
+  transition: width 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* 折叠状态 */
+.left-menu.collapsed {
+  width: 80px;
+}
+
+/* 折叠按钮 */
+.collapse-btn {
+  position: absolute;
+  right: -12px;
+  top: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #1e3a8a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.collapse-btn:hover {
+  background: #f0f0f0;
+  transform: scale(1.1);
+}
+
+.collapse-icon {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1e3a8a;
+  line-height: 1;
+}
+
+/* Logo 容器 */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  min-height: 120px;
+}
+
+.logo-image {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+}
+
+/* Logo 占位符 */
+.logo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 2px;
+}
+
+/* 折叠状态下的 Logo */
+.left-menu.collapsed .logo-placeholder {
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+/* 导航菜单 */
+.menu-nav {
+  flex: 1;
+  padding: 20px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* 滚动条样式 */
+.menu-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menu-nav::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.menu-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.menu-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 菜单列表 */
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 菜单项包装器 */
+.menu-item-wrapper {
+  position: relative;
+}
+
+/* 菜单项 */
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  position: relative;
+}
+
+/* 有二级菜单的菜单项 */
+.menu-item.has-submenu {
+  display: flex;
+  align-items: center;
+}
+
+.menu-item.has-submenu .menu-text {
+  flex: 1;
+  margin-right: 8px;
+}
+
+.menu-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: white;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.menu-item:hover::before {
+  transform: scaleX(1);
+}
+
+.menu-item:active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* 菜单图标 */
+.menu-icon {
+  font-size: 24px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 菜单文字 */
+.menu-text {
+  font-size: 16px;
+  font-weight: 500;
+  margin-left: 12px;
+  transition: opacity 0.3s ease;
+}
+
+/* 折叠状态下隐藏文字 */
+.left-menu.collapsed .menu-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.left-menu.collapsed .menu-item {
+  justify-content: center;
+  padding: 16px 10px;
+}
+
+/* 二级菜单箭头 */
+.submenu-arrow {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.submenu-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+/* 二级菜单列表 */
+.submenu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-left: 3px solid rgba(255, 255, 255, 0.3);
+  margin-left: 20px;
+}
+
+/* 二级菜单项 */
+.submenu-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px 12px 40px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  position: relative;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.submenu-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.submenu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.submenu-item:hover::before {
+  transform: scaleX(1);
+}
+
+.submenu-item:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 二级菜单图标 */
+.submenu-icon {
+  font-size: 18px;
+  min-width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+/* 二级菜单文字 */
+.submenu-text {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* 退出登录项特殊样式 */
+.logout-item {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(220, 38, 38, 0.2);
+}
+
+.logout-item:hover {
+  background: rgba(220, 38, 38, 0.4);
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .left-menu {
+    width: 30%;
+  }
+}
+
+@media (max-width: 768px) {
+  .left-menu {
+    width: 200px;
+  }
+
+  .left-menu.collapsed {
+    width: 60px;
+  }
+
+  .menu-text {
+    font-size: 14px;
+  }
+}
+
+

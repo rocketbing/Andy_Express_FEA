@@ -1,0 +1,15 @@
+.top-menu {
+   display: flex;
+   justify-content: space-between;
+   
+
+}
+.top-menu-lang {
+    cursor: pointer;
+}
+.top-menu-time {
+    font-size: 16px;
+    color: red;
+    font-weight: bold;
+    
+}

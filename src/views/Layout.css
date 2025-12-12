@@ -1,0 +1,41 @@
+/* 应用布局容器 */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+
+}
+
+/* 主内容区域 */
+.main-content {
+  flex: 1;
+  margin-left: 20%;
+  padding: 30px;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+/* 当导航栏折叠时，调整主内容区域 */
+.left-menu.collapsed ~ .main-content,
+body:has(.left-menu.collapsed) .main-content {
+  margin-left: 80px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .main-content {
+    margin-left: 30%;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 200px;
+    padding: 20px;
+  }
+
+  body:has(.left-menu.collapsed) .main-content {
+    margin-left: 60px;
+  }
+}
+
