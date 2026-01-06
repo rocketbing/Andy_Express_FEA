@@ -52,7 +52,7 @@ request.interceptors.response.use(
       case 401:
         notification.error({ message: errorMessage });
         localStorage.removeItem("token");
-        window.location.href = "/login";
+        window.location.hash = "#/login";
         break;
       case 400:
         errorMessage = `Bad Request: ${errorMessage}`;

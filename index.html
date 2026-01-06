@@ -9,5 +9,18 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // HashRouter 兼容脚本：将 /xxx 重定向为 /#/xxx
+      (function() {
+        var path = window.location.pathname;
+        var hash = window.location.hash;
+        var search = window.location.search;
+        
+        // 如果路径不是 "/" 且没有 hash，自动重定向
+        if (path !== "/" && !hash) {
+          window.location.replace("/#" + path + search);
+        }
+      })();
+    </script>
   </body>
 </html>
