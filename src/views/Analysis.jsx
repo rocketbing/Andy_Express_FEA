@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, memo } from 'react';
 import { useDispatch } from 'react-redux';
 import {
     LineChart,
@@ -14,6 +14,23 @@ import { Card, Row, Col, Alert, Spin } from 'antd';
 import { useSelector } from 'react-redux';
 import { fetchOrderStats } from '../store/orderSlice';
 import { fetchMemberListAsync } from '../store/authSlice';
+import './Analysis.css';
+
+// 提取 StatCard 为独立组件并使用 memo 优化
+const StatCard = memo(function StatCard({ icon, title, value }) {
+    return (
+        <Card className="analysis-card-container" style={{ width: '100%' }}>
+            <div className="analysis-card-content">
+                <div className="analysis-card-icon">{icon}</div>
+                <div className="analysis-card-info">
+                    <span className="analysis-card-title">{title}</span>
+                    <span className="analysis-card-value">{value}</span>
+                </div>
+            </div>
+        </Card>
+    );
+});
+
 export default function Analysis() {
     const dispatch = useDispatch();
     
@@ -33,12 +50,12 @@ export default function Analysis() {
     const memberListLoading = useSelector(state => state.auth.isLoading);
     const memberListError = useSelector(state => state.auth.error);
     
-    const cardInfo = [
+    const cardInfo = useMemo(() => [
         { title: '会员', icon: '👤', value: memberList?.pagination?.totalItems || 0 }, 
         { title: '订单', icon: '📦', value: orderStats?.data?.orderNumber || 0 }, 
         { title: '收入', icon: '💰', value: orderStats?.data?.totalIncome || 0 }, 
         { title: '利润', icon: '💸', value: orderStats?.data?.totalProfit || 0 }
-    ];
+    ], [memberList?.pagination?.totalItems, orderStats?.data?.orderNumber, orderStats?.data?.totalIncome, orderStats?.data?.totalProfit]);
     // 生成最近七天的时间数据
     const generateLastSevenDays = () => {
         const data = [];
@@ -100,18 +117,19 @@ export default function Analysis() {
     
     return (
         <>
-            <Row>
+            <Row gutter={[16, 16]}>
                 {cardInfo.map((item, index) => (
-                    <Col span={24 / cardInfo.length} style={{ display: 'flex', justifyContent: 'space-between' }} key={index}>
-                        <Card key={index} icon={item.icon} value={item.value} style={{ width: '100%', height: '140px', marginRight: '10px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{ fontSize: '40px' }}>{item.icon}</div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}><span style={{ fontSize: '25px', fontWeight: 'bold' }}>{item.title}</span><span style={{ fontSize: '24px'}}>{item.value}</span></div>
-                            </div>
-                        </Card>
+                    <Col 
+                        xs={24} 
+                        sm={12} 
+                        md={6} 
+                        key={index}
+                    >
+                        <StatCard icon={item.icon} title={item.title} value={item.value} />
                     </Col>
                 ))}
             </Row>
+            <div style={{ marginTop: '20px' }}>
             <ResponsiveContainer width="100%" height={400}>
 
                 <LineChart data={data} margin={{ top: 20, right: 40, left: 10, bottom: 10 }}>
@@ -125,6 +143,7 @@ export default function Analysis() {
                     <Line type="monotone" dataKey="loginUsers" stroke="blue" />
                 </LineChart>
             </ResponsiveContainer>
+            </div>
         </>
 
     );

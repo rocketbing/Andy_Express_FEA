@@ -1,12 +1,7 @@
 
-
-
-
 .custom-table-tabs {
-
     text-align: center;
     cursor: pointer;
-
 }
 
 .custom-table-tab {
@@ -14,13 +9,42 @@
     height: 50px;
     line-height: 50px;
     border-radius: 8px;
-  transition: box-shadow 0.2s ease;
-    &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
+    transition: box-shadow 0.2s ease;
+}
+
+.custom-table-tab:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .custom-table-breadcrumb {
     background-color: #f0f4f5;
     padding: 15px 16px;
+}
+
+/* 响应式设计 - 中屏 (768px - 1200px) */
+@media (min-width: 768px) and (max-width: 1200px) {
+    .custom-table-breadcrumb {
+        padding: 12px 14px;
+    }
+}
+
+/* 响应式设计 - 小屏 (< 768px) */
+@media (max-width: 767px) {
+    .custom-table-breadcrumb {
+        padding: 10px 12px;
+    }
+    
+    .custom-table-breadcrumb .ant-col {
+        margin-bottom: 10px;
+    }
+    
+    .custom-table-breadcrumb .ant-col:last-child {
+        margin-bottom: 0;
+    }
+    
+    .custom-table-tab {
+        height: 45px;
+        line-height: 45px;
+        font-size: 14px;
+    }
 }

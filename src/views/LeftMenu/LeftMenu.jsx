@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Tooltip } from "antd";
 import "./LeftMenu.css";
@@ -8,7 +8,8 @@ import { resetAll as resetProduct } from "../../store/productSlice";
 import { resetAll as resetOrder } from "../../store/orderSlice";
 import { resetAll as resetEmail } from "../../store/emailAnnouncementSlice";
 import { useDispatch } from "react-redux";
-export default function LeftMenu() {
+
+export default function LeftMenu({ isMobileMenuOpen, onCloseMobileMenu }) {
   const dispatch = useDispatch();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState(new Set());
@@ -80,6 +81,13 @@ export default function LeftMenu() {
   };
 
   const toggleCollapse = () => {
+    // 如果是小屏幕，点击折叠按钮应该关闭菜单
+    if (window.innerWidth <= 767 && onCloseMobileMenu) {
+      onCloseMobileMenu();
+      return;
+    }
+    
+    // 大屏幕时正常折叠/展开
     setIsCollapsed(!isCollapsed);
     // 收起菜单时清空展开状态
     if (!isCollapsed) {
@@ -87,8 +95,23 @@ export default function LeftMenu() {
     }
   };
 
+  // 移动端点击菜单项后关闭菜单
+  const handleMenuItemClick = (item) => {
+    handleMenuClick(item);
+    if (window.innerWidth <= 767 && onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
+  };
+
+  const handleSubmenuItemClick = (subItem) => {
+    handleSubmenuClick(subItem);
+    if (window.innerWidth <= 767 && onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
+  };
+
   return (
-    <div className={`left-menu ${isCollapsed ? "collapsed" : ""}`}>
+    <div className={`left-menu ${isCollapsed ? "collapsed" : ""} ${isMobileMenuOpen ? "mobile-open" : ""}`}>
       {/* 折叠按钮 */}
       <button className="collapse-btn" onClick={toggleCollapse}>
         <span className="collapse-icon">{isCollapsed ? "›" : "‹"}</span>
@@ -125,7 +148,7 @@ export default function LeftMenu() {
               >
                 <div
                   className={`menu-item ${item.isLogout ? "logout-item" : ""} ${item.hasSubmenu ? "has-submenu" : ""}`}
-                  onClick={() => handleMenuClick(item)}
+                  onClick={() => handleMenuItemClick(item)}
                 >
                   <span className="menu-icon">{item.icon}</span>
                   {!isCollapsed && <span className="menu-text">{item.name}</span>}
@@ -150,7 +173,7 @@ export default function LeftMenu() {
                     >
                       <li
                         className="submenu-item"
-                        onClick={() => handleSubmenuClick(subItem)}
+                        onClick={() => handleSubmenuItemClick(subItem)}
                       >
                         <span className="submenu-icon">{subItem.icon}</span>
                         <span className="submenu-text">{subItem.name}</span>

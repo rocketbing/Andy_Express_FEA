@@ -1,7 +1,7 @@
 import { Space, Spin, Button, Modal, Form, message } from "antd";
 import CustomTab from "../../components/CustomTab";
 import CustomInput from "../../components/CustomInput";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -44,25 +44,26 @@ export default function ReturningList() {
         ? useSelector(selectReturningListBySearch)
         : useSelector(selectReturningList);
 
-    const productList = rawList.map(item => ({
-        key: item._id,
-        productId: item._id,
-        memberName: item.username,
-        productName: item.goodName,
-        returnAddress: { returnShippingAddress: item.returnShippingAddress, returnShippingCity: item.returnShippingCity, returnShippingProvince: item.returnShippingProvince, returnShippingCountry: item.returnShippingCountry, returnShippingPostcode: item.returnShippingPostcode },
-        returnPhone: item.returnShippingPhone,
-        updateTime: moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
-        returnExpressNote: item.goodNotes,
-        operator: item.goodReturnOperator,
-        productStatus: item.goodStatus,
-        others: {
-            method: item.returnPayMethod,
-            isPayed: item.IsPayed,
-            returnShippingCostPrice: item.returnShippingCostPrice,
-            returnShippingPrice: item.returnShippingPrice,
-        },
-
-    }));
+    const productList = useMemo(() => {
+        return rawList.map(item => ({
+            key: item._id,
+            productId: item._id,
+            memberName: item.username,
+            productName: item.goodName,
+            returnAddress: { returnShippingAddress: item.returnShippingAddress, returnShippingCity: item.returnShippingCity, returnShippingProvince: item.returnShippingProvince, returnShippingCountry: item.returnShippingCountry, returnShippingPostcode: item.returnShippingPostcode },
+            returnPhone: item.returnShippingPhone,
+            updateTime: moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
+            returnExpressNote: item.goodNotes,
+            operator: item.goodReturnOperator,
+            productStatus: item.goodStatus,
+            others: {
+                method: item.returnPayMethod,
+                isPayed: item.IsPayed,
+                returnShippingCostPrice: item.returnShippingCostPrice,
+                returnShippingPrice: item.returnShippingPrice,
+            },
+        }));
+    }, [rawList]);
 
     const isLoading = search
         ? useSelector(selectReturningListBySearchLoading)
@@ -91,7 +92,7 @@ export default function ReturningList() {
         }
     }, [dispatch, currentPage, pageSize, search]);
 
-    const handleSearchChange = (value) => {
+    const handleSearchChange = useCallback((value) => {
         setSearch(value);
         if (value) {
             // 有搜索词时，调用搜索接口
@@ -101,10 +102,10 @@ export default function ReturningList() {
             dispatch(setPageInfo({ listType: 'returningList', page: { current: 1, pageSize: 10 } }));
             dispatch(fetchReturningList({ page: 0, size: 10 }));
         }
-    };
+    }, [dispatch]);
 
     // 处理分页变化
-    const handlePageChange = (page, size) => {
+    const handlePageChange = useCallback((page, size) => {
         if (search) {
             // 搜索状态下的分页
             dispatch(setPageInfo({ listType: 'returningListBySearch', page: { current: page, pageSize: size } }));
@@ -114,7 +115,7 @@ export default function ReturningList() {
             dispatch(setPageInfo({ listType: 'returningList', page: { current: page, pageSize: size } }));
             dispatch(fetchReturningList({ page: page - 1, size }));
         }
-    };
+    }, [dispatch, search]);
 
     const fillReturnPricewithSelfPay = (record, others) => {
         

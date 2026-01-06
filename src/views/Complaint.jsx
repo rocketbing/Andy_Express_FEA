@@ -1,6 +1,6 @@
 import CustomTab from "../components/CustomTab";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Button, Modal, Input, Tag, Space, message, Avatar } from "antd";
 import { 
     fetchComplaintList, 
@@ -39,29 +39,32 @@ export default function Complaint() {
         dispatch(fetchComplaintList({ page: currentPage - 1, size: pageSize }));
     }, [dispatch, currentPage, pageSize]);
 
-    const handlePageChange = (page, size) => {
+    // 使用 useCallback 优化：避免父组件重新渲染时创建新的函数引用
+    // 这样 CustomTab 子组件（已使用 React.memo）就不会因为函数引用变化而重新渲染
+    const handlePageChange = useCallback((page, size) => {
         dispatch(setPageInfo({ listType: 'complaintList', page: { current: page, pageSize: size } }));
         dispatch(fetchComplaintList({ page: page - 1, size }));
-    };
+    }, [dispatch]);
 
-    const handleSearchChange = (value) => {
+    const handleSearchChange = useCallback((value) => {
         setSearch(value);
-    };
+    }, []);
 
-    const handleViewDetail = (record) => {
+    const handleViewDetail = useCallback((record) => {
         setSelectedRecord(record);
         // 预填充已有的改进内容
         setReplyContent(record.advice_improvement || "");
         setIsReplyModalOpen(true);
-    };
+    }, []);
 
-    const handleReply = (record) => {
+    const handleReply = useCallback((record) => {
         setSelectedRecord(record);
         setReplyContent("");
         setIsReplyModalOpen(true);
-    };
+    }, []);
 
-    const handleReplySubmit = async () => {
+    // 使用 useCallback 优化：虽然这个函数不直接传给子组件，但保持一致性
+    const handleReplySubmit = useCallback(async () => {
         if (!replyContent.trim()) {
             message.error('请输入改进内容');
             return;
@@ -83,7 +86,7 @@ export default function Complaint() {
         } catch (error) {
             message.error(error || '提交失败，请重试');
         }
-    };
+    }, [replyContent, currentUser, selectedRecord, dispatch, currentPage, pageSize]);
 
     const getTypeColor = (type) => {
         switch (type) {
@@ -112,7 +115,7 @@ export default function Complaint() {
         }
     };
 
-    const columns = [
+    const columns = useMemo(() => [
         { title: '更新时间', dataIndex: 'updatedAt', key: 'updatedAt', width: 160, align: 'center' },
         { title: '用户邮箱', dataIndex: 'email', key: 'email', width: 160, align: 'center' },
         { 
@@ -157,19 +160,20 @@ export default function Complaint() {
                 </Space>
             )
         }
-    ];
+    ], [handleViewDetail, handleReply]);
 
     // 根据搜索条件过滤数据
-    const filteredData = search 
-        ? complaintList.filter(item => 
+    const filteredData = useMemo(() => {
+        if (!search) return complaintList;
+        return complaintList.filter(item => 
             (item._id && item._id.includes(search)) || 
             (item.title && item.title.includes(search)) ||
             (item.submitter && item.submitter.includes(search)) ||
             (item.contact && item.contact.includes(search))
-          )
-        : complaintList;
+        );
+    }, [complaintList, search]);
 
-    const data = filteredData.map(item => ({
+    const data = useMemo(() => filteredData.map(item => ({
         key: item._id || '',
         updatedAt: item.updatedAt ? moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss') : '',
         email: item.email || '',
@@ -178,7 +182,7 @@ export default function Complaint() {
         content: item.advice_content || '',
         operator: item.username || '无操作人员',
         advice_improvement: item.advice_improvement || ""
-    }));
+    })), [filteredData]);
 
     if (error) {
         return (

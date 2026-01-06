@@ -34,7 +34,7 @@ import UserCenter from "../views/UserCenter";
 export default function Router() {
   const routes = useRoutes([
     // 公开路由 - 不需要认证
-    { path: "login", element: <ReverseProtectedRoute><Login /></ReverseProtectedRoute> },
+    { path: "/login", element: <ReverseProtectedRoute><Login /></ReverseProtectedRoute> },
     
     {
       path: "/",
@@ -44,46 +44,46 @@ export default function Router() {
         </ProtectedRoute>
       ),
       children: [
-        { index: true, element: <Home /> },
-        { path: "about", element: <About /> },
-        { path: "user-center", element: <UserCenter /> },
+        { index: true, element: (<ProtectedRoute><Home /></ProtectedRoute>) },
+        { path: "about", element: (<ProtectedRoute><About /></ProtectedRoute>) },
+        { path: "user-center", element: (<ProtectedRoute><UserCenter /></ProtectedRoute>) },
         {
           path: "products",
-          element: <Product />,
+          element: (<ProtectedRoute><Product /></ProtectedRoute>),
           children: [
-            { path: 'pending-stock', element: <StockPendingList /> },
-            { path: 'stocked', element: <StockedList /> },
-            { path: 'pending-pack', element: <PendingPackList /> },
-            { path: 'packed', element: <PackedList /> },
-            { path: 'returning', element: <ReturningList /> },
-            { path: 'returned', element: <ReturnedList /> }
+            { path: 'pending-stock', element: (<ProtectedRoute><StockPendingList /></ProtectedRoute>) },
+            { path: 'stocked', element: (<ProtectedRoute><StockedList /></ProtectedRoute>) },
+            { path: 'pending-pack', element: (<ProtectedRoute><PendingPackList /></ProtectedRoute>) },
+            { path: 'packed', element: (<ProtectedRoute><PackedList /></ProtectedRoute>) },
+            { path: 'returning', element: (<ProtectedRoute><ReturningList /></ProtectedRoute>) },
+            { path: 'returned', element: (<ProtectedRoute><ReturnedList /></ProtectedRoute>) }
           ]
         },
         {
           path: "orders",
-          element: <Order />,
+          element: (<ProtectedRoute><Order /></ProtectedRoute>),
           children: [
-            { path: 'pending-pay', element: <PendingPayList /> },
-            { path: 'pending-send', element: <PendingSendList /> },
-            { path: 'shipped', element: <ShippedList /> },
-            { path: 'received', element: <ReceivedList /> },
+            { path: 'pending-pay', element: (<ProtectedRoute><PendingPayList /></ProtectedRoute>) },
+            { path: 'pending-send', element: (<ProtectedRoute><PendingSendList /></ProtectedRoute>) },
+            { path: 'shipped', element: (<ProtectedRoute><ShippedList /></ProtectedRoute>) },
+            { path: 'received', element: (<ProtectedRoute><ReceivedList /></ProtectedRoute>) },
           ]
         },
-        { path: "members", element: <MemberInfo /> },
-        { path: "feedback", element: <Complaint /> },
-        { path: "after-sales", element: <AfterSales /> },
+        { path: "members", element: (<ProtectedRoute><MemberInfo /></ProtectedRoute>) },
+        { path: "feedback", element: (<ProtectedRoute><Complaint /></ProtectedRoute>) },
+        { path: "after-sales", element: (<ProtectedRoute><AfterSales /></ProtectedRoute>) },
         {
-          path: 'email-announcement', element: <EmailAnnouncement />, children: [
-            { path: 'create', element: <EmailAnnouncementCreate /> },
-            { path: 'edit', element: <EmailAnnouncementEdit /> },
-            { path: 'detail/:id', element: <EmailAnnouncementDetail /> },
+          path: 'email-announcement', element: (<ProtectedRoute><EmailAnnouncement /></ProtectedRoute>), children: [
+            { path: 'create', element: (<ProtectedRoute><EmailAnnouncementCreate /></ProtectedRoute>) },
+            { path: 'edit', element: (<ProtectedRoute><EmailAnnouncementEdit /></ProtectedRoute>) },
+            { path: 'detail/:id', element: (<ProtectedRoute><EmailAnnouncementDetail /></ProtectedRoute>) },
           ]
         },
-        { path: 'analysis', element: <Analysis /> },
-        { path: 'order-flow', element: <OrderFlow /> },
-        { path: 'return-flow', element: <ReturnFlow /> },
-        { path: 'cancel-order', element: <CancelOrder /> },
-        { path: 'order-test', element: <OrderTest /> }
+        { path: 'analysis', element: (<ProtectedRoute><Analysis /></ProtectedRoute>) },
+        { path: 'order-flow', element: (<ProtectedRoute><OrderFlow /></ProtectedRoute>) },
+        { path: 'return-flow', element: (<ProtectedRoute><ReturnFlow /></ProtectedRoute>) },
+        { path: 'cancel-order', element: (<ProtectedRoute><CancelOrder /></ProtectedRoute>) },
+        { path: 'order-test', element: (<ProtectedRoute><OrderTest /></ProtectedRoute>) }
       ],
     },
     

@@ -160,14 +160,12 @@ export default function CancelOrder() {
                 cardTitle="取消订单流水"
                 columns={columns}
                 data={data}
-                slotButton={
-                    <Button type="primary" className="mb-3" onClick={handleExportExcel}>导出Excel</Button>
-                }
                 paginationTotal={total}
                 pageChange={handlePageChange}
                 currentPage={currentPage}
                 pageSize={pageSize}
             >
+                <Button type="primary" className="mb-3" onClick={handleExportExcel}>导出Excel</Button>
             </CustomTab>
             
             {/* 导出Excel时间段选择Modal */}

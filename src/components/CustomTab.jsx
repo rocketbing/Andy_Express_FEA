@@ -1,17 +1,19 @@
 
-import React from "react";
+import React, { useCallback, memo } from "react";
 import { Col, Row, Input, Table } from 'antd';
 import "./CustomTab.css";
 import { Breadcrumb } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-export default function CustomTab({ cardTitle, currentTab, columns, data, onSearchChange, paginationTotal, pageChange, currentPage, pageSize, slotButton }) {
-    const handleSearchChange = (e) => {
+
+const CustomTab = memo(function CustomTab({ cardTitle, currentTab, columns, data, onSearchChange, paginationTotal, pageChange, currentPage, pageSize, slotButton, children }) {
+    const handleSearchChange = useCallback((e) => {
         onSearchChange(e.target.value);
-    }
-    const onChangePage = (pagination) => {
+    }, [onSearchChange]);
+    
+    const onChangePage = useCallback((pagination) => {
         const { current, pageSize } = pagination;
         if (pageChange) pageChange(current, pageSize);
-      };
+    }, [pageChange]);
 
     return (
         <>
@@ -26,6 +28,7 @@ export default function CustomTab({ cardTitle, currentTab, columns, data, onSear
                     {onSearchChange && <Col span={6}><Input placeholder="Search" prefix={<SearchOutlined />} onPressEnter={handleSearchChange} /></Col>}
                 </Row>
             </div>
+            <div>{children}</div>
             <div>{slotButton}</div>
             <div style={{ width: '100%', overflowX: 'auto' }}>
                 <Table 
@@ -49,4 +52,6 @@ export default function CustomTab({ cardTitle, currentTab, columns, data, onSear
 
         </>
     )
-}
+});
+
+export default CustomTab;

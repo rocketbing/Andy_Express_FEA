@@ -1,6 +1,6 @@
 import { Col, Row } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { ShoppingCartOutlined, CheckCircleOutlined, TruckOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import "./index.css";
 
@@ -8,12 +8,12 @@ export default function Order() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const tabs = [
+    const tabs = useMemo(() => [
         { id: 'pendingPay', name: "待付款", path: 'pending-pay', icon: <ClockCircleOutlined /> },
         { id: 'pendingSend', name: "待寄出", path: 'pending-send', icon: <ShoppingCartOutlined /> },
         { id: 'shipped', name: "已发货", path: 'shipped', icon: <TruckOutlined /> },
         { id: 'received', name: "已签收", path: 'received', icon: <CheckCircleOutlined /> },
-    ];
+    ], []);
 
     const [currentTab, setCurrentTab] = useState(tabs?.[0] || null);
 
@@ -29,10 +29,10 @@ export default function Order() {
         }
     }, [location.pathname, navigate]);
 
-    const handleTabClick = (tab) => {
+    const handleTabClick = useCallback((tab) => {
         setCurrentTab(tab);
         navigate(tab.path);
-    };
+    }, [navigate]);
 
     return (
         <>

@@ -10,7 +10,7 @@ import { DownOutlined } from '@ant-design/icons';
 import { Dropdown, Space } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-export default function TopMenu() {
+export default function TopMenu({ onToggleMobileMenu, isMobile }) {
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
@@ -18,7 +18,7 @@ export default function TopMenu() {
     const userName = useSelector(selectUserName);
     const user = useSelector(selectUser);
     const [time, setTime] = useState(new Date());
-    
+
     useEffect(() => {
         const timer = setInterval(() => {
             setTime(new Date());
@@ -27,33 +27,50 @@ export default function TopMenu() {
     }, []);
     const items = [
         {
-          label:'个人资料',
-          key:'profile',
-          onClick:()=>{
-            navigate('/user-center');
-          }
+            label: '个人资料',
+            key: 'profile',
+            onClick: () => {
+                navigate('/user-center');
+            }
         },
         {
-            label:'退出登录',
-            key:'logout',
-            onClick:()=>{
-              // 清除所有 Redux 数据
-              dispatch(resetProduct());
-              dispatch(resetOrder());
-              dispatch(resetEmail());
-              dispatch(logout());
-              // 将当前路径作为 query 参数传递
-              const redirectPath = encodeURIComponent(location.pathname + location.search + location.hash);
-              navigate(`/login?redirect=${redirectPath}`);
+            label: '退出登录',
+            key: 'logout',
+            onClick: () => {
+                // 清除所有 Redux 数据
+                dispatch(resetProduct());
+                dispatch(resetOrder());
+                dispatch(resetEmail());
+                dispatch(logout());
+                // 将当前路径作为 query 参数传递
+                const redirectPath = encodeURIComponent(location.pathname + location.search + location.hash);
+                navigate(`/login?redirect=${redirectPath}`);
             }
         }
-      ];
+    ];
     return (
         <div className="top-menu">
-            <div>
+            <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+                {isMobile && onToggleMobileMenu && (
+                    <button
+                        onClick={onToggleMobileMenu}
+                        style={{
+                            background: 'none',
+                            border: '1px solid #d9d9d9',
+                            borderRadius: '4px',
+                            padding: '8px 12px',
+                            cursor: 'pointer',
+                            marginRight: '10px',
+                            fontSize: '18px'
+                        }}
+                        aria-label="Toggle menu"
+                    >
+                        ☰
+                    </button>
+                )}
                 <p className="top-menu-time">此网站以北京时间为标准: {time.toLocaleString()}</p>
             </div>
-            <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'flex-end',width: '100%' }}>
                 <span onClick={() => {
                     dispatch(setLanguage("en"));
 
@@ -63,16 +80,16 @@ export default function TopMenu() {
                     dispatch(setLanguage("zh"));
 
                 }} className="top-menu-lang me-3" >🇨🇳 CN</span>
-                 <Dropdown menu={{ items }}>
-                <a onClick={e => e.preventDefault()}>
-                    <Space>
-                        {isAuthenticated && <span>欢迎回来, {userName}</span>}
-                        <DownOutlined />
-                    </Space>
-                </a>
-            </Dropdown>
+                <Dropdown menu={{ items }}>
+                    <a onClick={e => e.preventDefault()}>
+                        <Space>
+                            {isAuthenticated && <span>欢迎回来, {userName}</span>}
+                            <DownOutlined />
+                        </Space>
+                    </a>
+                </Dropdown>
             </div>
-           
+
         </div>
     )
 }

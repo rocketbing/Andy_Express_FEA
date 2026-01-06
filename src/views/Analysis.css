@@ -1,0 +1,128 @@
+/* Analysis 页面样式 */
+.analysis-card-container {
+  width: 100%;
+  height: 140px;
+}
+
+.analysis-card-container .ant-card-body {
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.analysis-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.analysis-card-icon {
+  font-size: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.analysis-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.analysis-card-title {
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.analysis-card-value {
+  font-size: 24px;
+}
+
+/* 响应式设计 - 中屏 (768px - 1200px) */
+@media (min-width: 768px) and (max-width: 1200px) {
+  .analysis-card-icon {
+    font-size: 32px;
+  }
+
+  .analysis-card-title {
+    font-size: 20px;
+  }
+
+  .analysis-card-value {
+    font-size: 20px;
+  }
+
+  .analysis-card-container {
+    height: 120px;
+  }
+
+  .analysis-card-container .ant-card-body {
+    padding: 14px;
+  }
+}
+
+/* 响应式设计 - 小屏 (< 768px) */
+@media (max-width: 767px) {
+  .analysis-card-icon {
+    font-size: 28px;
+  }
+
+  .analysis-card-title {
+    font-size: 16px;
+  }
+
+  .analysis-card-value {
+    font-size: 18px;
+  }
+
+  .analysis-card-container {
+    height: 100px;
+  }
+
+  .analysis-card-container .ant-card-body {
+    padding: 12px;
+  }
+
+  .analysis-card-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    gap: 10px;
+  }
+
+  .analysis-card-info {
+    gap: 5px;
+  }
+}
+
+/* 超小屏 (< 480px) */
+@media (max-width: 479px) {
+  .analysis-card-icon {
+    font-size: 24px;
+  }
+
+  .analysis-card-title {
+    font-size: 14px;
+  }
+
+  .analysis-card-value {
+    font-size: 16px;
+  }
+
+  .analysis-card-container {
+    height: 90px;
+  }
+
+  .analysis-card-container .ant-card-body {
+    padding: 10px;
+  }
+
+  .analysis-card-content {
+    gap: 8px;
+  }
+}
+

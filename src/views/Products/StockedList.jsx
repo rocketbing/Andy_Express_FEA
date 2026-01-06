@@ -1,7 +1,7 @@
 import { Space, Modal, Form, message } from "antd";
 import CustomTab from "../../components/CustomTab";
 import CustomInput from "../../components/CustomInput";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import moment from 'moment';
 import { useSelector, useDispatch } from 'react-redux';
 import { useOutletContext } from "react-router-dom";
@@ -32,26 +32,28 @@ export default function StockedList() {
         ? useSelector(selectStockedListBySearch)
         : useSelector(selectStockedList);
     
-    const productList = rawList.map(item => ({
-        key: item._id,
-        productId: item._id,
-        username: item.username,
-        goodName: item.goodName,
-        goodNumber: item.goodNumber,
-        packageLocation: item.packageLocation,
-        goodSize: {
-            length: item.goodSize_length,
-            width: item.goodSize_width,
-            height: item.goodSize_height
-        },
-        goodPaidWeight: item.goodPaidWeight,
-        goodType: item.goodType,
-        updatedAt: moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
-        note: item.note,
-        goodStatus: item.goodStatus,
-        stockOperator: item.stockOperator,
-        stockUpdateOperator: item.stockUpdateOperator
-    }));
+    const productList = useMemo(() => {
+        return rawList.map(item => ({
+            key: item._id,
+            productId: item._id,
+            username: item.username,
+            goodName: item.goodName,
+            goodNumber: item.goodNumber,
+            packageLocation: item.packageLocation,
+            goodSize: {
+                length: item.goodSize_length,
+                width: item.goodSize_width,
+                height: item.goodSize_height
+            },
+            goodPaidWeight: item.goodPaidWeight,
+            goodType: item.goodType,
+            updatedAt: moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
+            note: item.note,
+            goodStatus: item.goodStatus,
+            stockOperator: item.stockOperator,
+            stockUpdateOperator: item.stockUpdateOperator
+        }));
+    }, [rawList]);
     
     const total = search
         ? useSelector(selectStockedListBySearchTotal)
@@ -78,7 +80,7 @@ export default function StockedList() {
         }
     }, [dispatch, currentPage, pageSize, search]);
     
-    const handleSearchChange = (value) => {
+    const handleSearchChange = useCallback((value) => {
         setSearch(value);
         if(value) {
             // 有搜索词时，调用搜索接口
@@ -88,9 +90,9 @@ export default function StockedList() {
             dispatch(setPageInfo({ listType: 'stockedList', page: { current: 1, pageSize: 10 } }));
             dispatch(fetchStockedList({ page: 0, size: 10 }));
         }
-    };
+    }, [dispatch]);
     
-    const handlePageChange = (page, size) => {
+    const handlePageChange = useCallback((page, size) => {
         if (search) {
             // 搜索状态下的分页
             dispatch(setPageInfo({ listType: 'stockedListBySearch', page: { current: page, pageSize: size } }));
@@ -100,8 +102,8 @@ export default function StockedList() {
             dispatch(setPageInfo({ listType: 'stockedList', page: { current: page, pageSize: size } }));
             dispatch(fetchStockedList({ page: page - 1, size }));
         }
-    };
-    const handleStockIn = (record) => {
+    }, [dispatch, search]);
+    const handleStockIn = useCallback((record) => {
         setIsEditMode(true); // 设置为修改模式
         setSelectedId(record.productId);
 
@@ -134,7 +136,7 @@ export default function StockedList() {
         setFormData(initialData);
 
         setIsModalOpen(true);
-    }
+    }, [form]);
 
     const handleInputChange = (name, value) => {
         setFormData(prev => ({
@@ -191,7 +193,7 @@ export default function StockedList() {
         setFormData({});
         form.resetFields();
     }
-    const columns = [
+    const columns = useMemo(() => [
         { title: '货物号', dataIndex: 'productId', key: 'productId', align: 'center' },
         { title: '会员名称', dataIndex: 'username', key: 'username', align: 'center' },
         { title: '货物名称', dataIndex: 'goodName', key: 'goodName', align: 'center' },
@@ -243,7 +245,7 @@ export default function StockedList() {
             )
         },
         { title: '操作', dataIndex: 'action', key: 'action', fixed: 'right', align: 'center', render: (_, record) => (<Space><a className="stock-modify-btn" onClick={() => handleStockIn(record)}>修改</a></Space>), width: 100 },
-    ];
+    ], [handleStockIn]);
 
     const addNewStock = () => {
         setIsEditMode(false); // 设置为添加模式

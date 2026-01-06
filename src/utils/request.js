@@ -40,8 +40,6 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (response) => {
     const { status, data, request: req } = response;
-    const base = import.meta.env.VITE_APP_BASE_API;
-    const url = req.responseURL;
 
     if (status === 200 || status === 201) {
       return data || response;

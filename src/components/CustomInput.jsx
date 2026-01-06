@@ -1,5 +1,7 @@
-import {Form, Input, Select, Radio} from 'antd';
-export default function CustomInput({ inputAttrs, onChange }) {
+import { memo } from 'react';
+import { Form, Input, Select, Radio } from 'antd';
+
+const CustomInput = memo(function CustomInput({ inputAttrs, onChange }) {
     let inputComponent;
 
     // 如果提供了 onChange，使用非受控模式（用于没有 Form 实例的场景）
@@ -34,4 +36,12 @@ export default function CustomInput({ inputAttrs, onChange }) {
             {inputComponent}
         </Form.Item>
     )
-}
+}, (prevProps, nextProps) => {
+    // 自定义比较函数：比较 inputAttrs 和 onChange 引用
+    return (
+        prevProps.inputAttrs === nextProps.inputAttrs &&
+        prevProps.onChange === nextProps.onChange
+    );
+});
+
+export default CustomInput;

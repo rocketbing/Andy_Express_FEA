@@ -1,7 +1,7 @@
 
 import { Col, Row } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { FileAddOutlined, FileDoneOutlined, TruckOutlined, BankOutlined, AntDesignOutlined } from '@ant-design/icons';
 import "./index.css";
 
@@ -9,14 +9,14 @@ export default function Product() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const tabs = [
+    const tabs = useMemo(() => [
         { id: 'pendingStock', name: "待入库", path: 'pending-stock', icon: <FileAddOutlined /> },
         { id: 'stocked', name: "已入库", path: 'stocked', icon: <FileDoneOutlined /> },
         { id: 'pendingPack', name: "待打包", path: 'pending-pack', icon: <FileAddOutlined /> },
         { id: 'packed', name: "已打包", path: 'packed', icon: <BankOutlined /> },
         { id: 'returning', name: "退货中", path: 'returning', icon: <TruckOutlined /> },
         { id: 'returned', name: "已退货", path: 'returned', icon: <AntDesignOutlined /> }
-    ];
+    ], []);
 
     const [currentTab, setCurrentTab] = useState(tabs?.[0] || null);
 
@@ -36,10 +36,10 @@ export default function Product() {
         }
     }, []);
 
-    const handleTabClick = (tab) => {
+    const handleTabClick = useCallback((tab) => {
         setCurrentTab(tab);
         navigate(tab.path);
-    };
+    }, [navigate]);
 
     return (
         <>        <div className="product-container mb-5">

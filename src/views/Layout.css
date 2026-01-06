@@ -2,7 +2,6 @@
 .app-layout {
   display: flex;
   min-height: 100vh;
-
 }
 
 /* 主内容区域 */
@@ -13,29 +12,69 @@
   transition: margin-left 0.3s ease;
   min-height: 100vh;
   background: #ffffff;
+  width: calc(100% - 20%);
 }
 
 /* 当导航栏折叠时，调整主内容区域 */
 .left-menu.collapsed ~ .main-content,
 body:has(.left-menu.collapsed) .main-content {
   margin-left: 80px;
+  width: calc(100% - 80px);
 }
 
-/* 响应式设计 */
-@media (max-width: 1200px) {
+/* 响应式设计 - 大屏 (1200px - 1920px) */
+@media (min-width: 1201px) and (max-width: 1920px) {
   .main-content {
-    margin-left: 30%;
+    margin-left: 20%;
+    padding: 30px;
+    width: calc(100% - 20%);
   }
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 200px;
-    padding: 20px;
-  }
-
+  
+  .left-menu.collapsed ~ .main-content,
   body:has(.left-menu.collapsed) .main-content {
-    margin-left: 60px;
+    margin-left: 80px;
+    width: calc(100% - 80px);
+  }
+}
+
+/* 响应式设计 - 中屏 (768px - 1200px) */
+@media (min-width: 768px) and (max-width: 1200px) {
+  .main-content {
+    margin-left: 25%;
+    padding: 25px;
+    width: calc(100% - 25%);
+  }
+  
+  .left-menu.collapsed ~ .main-content,
+  body:has(.left-menu.collapsed) .main-content {
+    margin-left: 80px;
+    width: calc(100% - 80px);
+  }
+}
+
+/* 响应式设计 - 小屏 (< 768px) */
+@media (max-width: 767px) {
+  .main-content {
+    margin-left: 0;
+    padding: 15px;
+    width: 100%;
+  }
+  
+  /* 遮罩层 */
+  .menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  .menu-overlay.active {
+    display: block;
   }
 }
 

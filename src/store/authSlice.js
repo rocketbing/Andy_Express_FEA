@@ -16,9 +16,6 @@ export const fetchUserProfileAsync = createAsyncThunk(
       return response;
     } catch (error) {
       if (error.message.includes('401') || error.message.includes('认证')) {
-        // Token 过期，清除本地存储
-        localStorage.removeItem('token');
-        localStorage.removeItem('auth-user');
         return rejectWithValue('认证已过期，请重新登录');
       }
       return rejectWithValue(error.message || '网络错误，请重试');
@@ -94,37 +91,21 @@ export const fetchMemberListAsync = createAsyncThunk(
   }
   }
 );
-// 从 localStorage 获取初始登录状态
-const getInitialAuthState = () => {
-  const savedToken = localStorage.getItem('token');
-  const savedUser = localStorage.getItem('auth-user');
-  
-  // 解析用户数据
-  let parsedUser = null;
-  if (savedUser) {
-    try {
-      parsedUser = JSON.parse(savedUser);
-    } catch (error) {
-      console.error('解析用户数据失败:', error);
-      parsedUser = null;
-    }
-  }
-  
-  return {
-    isAuthenticated: !!savedToken,
-    token: savedToken || '',
-    user: parsedUser,
-    isLoading: false,
-    error: null,
-    lastLoginTime: localStorage.getItem('last-login-time') || '',
-    memberList: [],
-  };
+// 初始认证状态
+const initialState = {
+  isAuthenticated: false,
+  token: null,
+  user: null,
+  isLoading: false,
+  error: null,
+  lastLoginTime: null,
+  memberList: [],
 };
 
 // 认证状态切片
 const authSlice = createSlice({
   name: 'auth',
-  initialState: getInitialAuthState(),
+  initialState,
   reducers: {
     // 清除错误
     clearError: (state) => {
@@ -139,16 +120,7 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = null;
       state.lastLoginTime = null;
-      
-      // 清除 localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('auth-user');
-      localStorage.removeItem('last-login-time');
-      
-      // 清除 sessionStorage
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('auth-user');
-      sessionStorage.removeItem('last-login-time');
+      localStorage.removeItem("token");
     },
     
     // 重置认证状态
@@ -159,16 +131,6 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = null;
       state.lastLoginTime = null;
-      
-      // 清除 localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('auth-user');
-      localStorage.removeItem('last-login-time');
-      
-      // 清除 sessionStorage
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('auth-user');
-      sessionStorage.removeItem('last-login-time');
     }
   },
   extraReducers: (builder) => {
@@ -186,11 +148,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = null;
         state.lastLoginTime = new Date().toISOString();
-        
-        // 保存到 localStorage
-        localStorage.setItem('token', state.token);
-        localStorage.setItem('auth-user', JSON.stringify(state.user));
-        localStorage.setItem('last-login-time', state.lastLoginTime);
+        localStorage.setItem("token", data.token);
       })
       .addCase(loginAsync.rejected, (state, action) => {
         state.isAuthenticated = false;
@@ -198,16 +156,6 @@ const authSlice = createSlice({
         state.user = null;
         state.isLoading = false;
         state.error = action.payload;
-        
-        // 清除 localStorage
-        localStorage.removeItem('token');
-        localStorage.removeItem('auth-user');
-        localStorage.removeItem('last-login-time');
-        
-        // 清除 sessionStorage
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('auth-user');
-        sessionStorage.removeItem('last-login-time');
       });
 
 
@@ -221,9 +169,6 @@ const authSlice = createSlice({
         state.user = action.payload;
         state.isLoading = false;
         state.error = null;
-        
-        // 更新 localStorage
-        localStorage.setItem('auth-user', JSON.stringify(action.payload));
       })
       .addCase(fetchUserProfileAsync.rejected, (state, action) => {
         state.isLoading = false;
@@ -234,12 +179,6 @@ const authSlice = createSlice({
           state.isAuthenticated = false;
           state.token = null;
           state.user = null;
-          localStorage.removeItem('token');
-          localStorage.removeItem('auth-user');
-          localStorage.removeItem('last-login-time');
-          sessionStorage.removeItem('token');
-          sessionStorage.removeItem('auth-user');
-          sessionStorage.removeItem('last-login-time');
         }
       });
 
@@ -253,9 +192,6 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.isLoading = false;
         state.error = null;
-        
-        // 更新 localStorage
-        localStorage.setItem('token', action.payload.token);
       })
       .addCase(refreshTokenAsync.rejected, (state, action) => {
         state.isAuthenticated = false;
@@ -263,16 +199,6 @@ const authSlice = createSlice({
         state.user = null;
         state.isLoading = false;
         state.error = action.payload;
-        
-        // 清除 localStorage
-        localStorage.removeItem('token');
-        localStorage.removeItem('auth-user');
-        localStorage.removeItem('last-login-time');
-        
-        // 清除 sessionStorage
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('auth-user');
-        sessionStorage.removeItem('last-login-time');
       });
 
     // 更新用户信息异步操作
@@ -285,9 +211,6 @@ const authSlice = createSlice({
         state.user = { ...state.user, ...action.payload };
         state.isLoading = false;
         state.error = null;
-        
-        // 更新 localStorage
-        localStorage.setItem('auth-user', JSON.stringify(state.user));
       })
       .addCase(updateUserProfileAsync.rejected, (state, action) => {
         state.isLoading = false;

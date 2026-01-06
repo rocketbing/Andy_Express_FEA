@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useEffect, useRef } from 'react';
 import { selectIsAuthenticated } from '../store/authSlice';
 import { message } from 'antd';
 
@@ -10,10 +11,21 @@ import { message } from 'antd';
  */
 export default function ProtectedRoute({ children }) {
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const hasShownMessage = useRef(false);
+
+  // 使用useEffect处理副作用，避免在render中触发更新
+  useEffect(() => {
+    if (!isAuthenticated && !hasShownMessage.current) {
+      message.error("请先登录!");
+      hasShownMessage.current = true;
+    } else if (isAuthenticated) {
+      // 重置消息标志，以便下次未认证时可以再次显示
+      hasShownMessage.current = false;
+    }
+  }, [isAuthenticated]);
 
   // 如果未认证，重定向到登录页
   if (!isAuthenticated) {
-    message.error("请先登录!");
     return <Navigate to="/login" replace />;
   }
 

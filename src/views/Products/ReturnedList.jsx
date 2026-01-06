@@ -1,7 +1,7 @@
 import { Spin, Modal, Button, Form, message } from "antd";
 import CustomTab from "../../components/CustomTab";
 import CustomInput from "../../components/CustomInput";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -37,19 +37,21 @@ export default function ReturnedList() {
         ? useSelector(selectReturnedListBySearch)
         : useSelector(selectReturnedList);
     
-    const productList = rawList.map(item => ({
-        key: item._id,
-        productId: item._id,
-        username: item.username,
-        productName: item.goodName,
-        returnAddress: {returnShippingAddress: item.returnShippingAddress, returnShippingCity: item.returnShippingCity, returnShippingProvince: item.returnShippingProvince, returnShippingCountry: item.returnShippingCountry, returnShippingPostcode: item.returnShippingPostcode},
-        returnContact: item.returnShippingRecevier,
-        returnPhone: item.returnShippingPhone,
-        updateTime: moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
-        productStatus: item.goodStatus,
-        operator: item.stockOperator || '无操作人员',
-        action: {localExpressCompany: item.localExpressCompany, localExpressNumber: item.localExpressNumber,returnPayMethod: item.returnPayMethod}
-    }));
+    const productList = useMemo(() => {
+        return rawList.map(item => ({
+            key: item._id,
+            productId: item._id,
+            username: item.username,
+            productName: item.goodName,
+            returnAddress: {returnShippingAddress: item.returnShippingAddress, returnShippingCity: item.returnShippingCity, returnShippingProvince: item.returnShippingProvince, returnShippingCountry: item.returnShippingCountry, returnShippingPostcode: item.returnShippingPostcode},
+            returnContact: item.returnShippingRecevier,
+            returnPhone: item.returnShippingPhone,
+            updateTime: moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
+            productStatus: item.goodStatus,
+            operator: item.stockOperator || '无操作人员',
+            action: {localExpressCompany: item.localExpressCompany, localExpressNumber: item.localExpressNumber,returnPayMethod: item.returnPayMethod}
+        }));
+    }, [rawList]);
     const isLoading = search 
         ? useSelector(selectReturnedListBySearchLoading)
         : useSelector(selectReturnedLoading);
@@ -77,7 +79,7 @@ export default function ReturnedList() {
         }
     }, [dispatch, currentPage, pageSize, search]);
     
-    const handleSearchChange = (value) => {
+    const handleSearchChange = useCallback((value) => {
         setSearch(value);
         if(value) {
             // 有搜索词时，调用搜索接口
@@ -87,9 +89,9 @@ export default function ReturnedList() {
             dispatch(setPageInfo({ listType: 'returnedList', page: { current: 1, pageSize: 10 } }));
             dispatch(fetchReturnedList({ page: 0, size: 10 }));
         }
-    };
+    }, [dispatch]);
 
-    const editReturnInfo = (recordId, action) => {
+    const editReturnInfo = useCallback((recordId, action) => {
         setSelectedExpressRecordId([recordId]);
         setIsExpressModalOpen(true);
         // 预填充现有的快递信息
@@ -97,9 +99,9 @@ export default function ReturnedList() {
             localExpressCompany: action.localExpressCompany || undefined,
             localExpressNumber: action.localExpressNumber || undefined
         });
-    };
+    }, [form]);
     // 处理分页变化
-    const handlePageChange = (page, size) => {
+    const handlePageChange = useCallback((page, size) => {
         if (search) {
             // 搜索状态下的分页
             dispatch(setPageInfo({ listType: 'returnedListBySearch', page: { current: page, pageSize: size } }));
@@ -109,7 +111,7 @@ export default function ReturnedList() {
             dispatch(setPageInfo({ listType: 'returnedList', page: { current: page, pageSize: size } }));
             dispatch(fetchReturnedList({ page: page - 1, size }));
         }
-    };
+    }, [dispatch, search]);
     
     const handleExpressModalOk = async () => {
         try {
@@ -149,7 +151,7 @@ export default function ReturnedList() {
         setSelectedExpressRecordId([]);
     };
     
-    const columns = [
+    const columns = useMemo(() => [
         { title: '货物号', dataIndex: 'productId', key: 'productId' },
         { title: '会员名称', dataIndex: 'username', key: 'username' },
         { title: '货品名称', dataIndex: 'productName', key: 'productName' },
@@ -168,7 +170,7 @@ export default function ReturnedList() {
             render: (action, record) => (<div><p>快递公司: <span style={{ color: 'green' }}>{action.localExpressCompany}</span></p><p>快递单号: <span style={{ color: 'green' }}>{action.localExpressNumber}</span></p><p>退货付款方式: <span style={{ color: action.returnPayMethod == 0 ? 'green' : 'red' }}>{action.returnPayMethod == 0 ? '到付' : '自付'}</span></p><Button type="primary" onClick={() => editReturnInfo(record.productId, action)}>修改快递信息</Button></div>),
             width: 200
         },
-    ];
+    ], [editReturnInfo]);
     
     // 显示加载状态
     if (isLoading) {

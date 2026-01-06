@@ -151,22 +151,59 @@ export default function EmailAnnouncementCreate() {
                     <Row gutter={16}>
                         <Col span={24}>
                             <Form.Item label="预览">
-                                <Card
-                                    size="small"
-                                    style={{
-                                        minHeight: '150px',
-                                        backgroundColor: '#fafafa',
-                                        border: '1px dashed #d9d9d9'
-                                    }}
+                                <Form.Item
+                                    shouldUpdate={(prevValues, currentValues) =>
+                                        prevValues.title !== currentValues.title ||
+                                        prevValues.summary !== currentValues.summary
+                                    }
+                                    noStyle
                                 >
-                                    <div
-                                        dangerouslySetInnerHTML={{ __html: content || '暂无内容' }}
-                                        style={{
-                                            minHeight: '100px',
-                                            padding: '10px'
-                                        }}
-                                    />
-                                </Card>
+                                    {({ getFieldValue }) => {
+                                        const title = getFieldValue('title');
+                                        const summary = getFieldValue('summary');
+                                        return (
+                                            <Card
+                                                size="small"
+                                                style={{
+                                                    minHeight: '150px',
+                                                    backgroundColor: '#fafafa',
+                                                    border: '1px dashed #d9d9d9'
+                                                }}
+                                            >
+                                                <div style={{ padding: '10px' }}>
+                                                    {title && (
+                                                        <div style={{ 
+                                                            fontSize: '20px', 
+                                                            fontWeight: 'bold', 
+                                                            marginBottom: '10px',
+                                                            paddingBottom: '10px',
+                                                            borderBottom: '1px solid #e8e8e8'
+                                                        }}>
+                                                            {title}
+                                                        </div>
+                                                    )}
+                                                    {summary && (
+                                                        <div style={{ 
+                                                            fontSize: '14px', 
+                                                            color: '#666', 
+                                                            marginBottom: '15px',
+                                                            paddingBottom: '10px',
+                                                            borderBottom: '1px solid #e8e8e8'
+                                                        }}>
+                                                            {summary}
+                                                        </div>
+                                                    )}
+                                                    <div
+                                                        dangerouslySetInnerHTML={{ __html: content || '暂无内容' }}
+                                                        style={{
+                                                            minHeight: '100px'
+                                                        }}
+                                                    />
+                                                </div>
+                                            </Card>
+                                        );
+                                    }}
+                                </Form.Item>
                             </Form.Item>
                         </Col>
                     </Row>

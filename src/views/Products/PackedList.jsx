@@ -17,7 +17,7 @@ import {
     selectPackedListBySearchError,
     setPageInfo 
 } from "../../store/productSlice";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Button, Modal, DatePicker, Space, message } from "antd";
 import { export_antd_table_to_excel } from "../../utils/excelExport";
 import moment from "moment";
@@ -59,7 +59,7 @@ export default function PackedList() {
         }
     }, [dispatch, currentPage, pageSize, search]);
     
-    const handleSearchChange = (value) => {
+    const handleSearchChange = useCallback((value) => {
         setSearch(value);
         if(value) {
             // 有搜索词时，调用搜索接口
@@ -69,7 +69,7 @@ export default function PackedList() {
             dispatch(setPageInfo({ listType: 'packedList', page: { current: 1, pageSize: 10 } }));
             dispatch(fetchPackedList({ page: 0, size: 10 }));
         }
-    };
+    }, [dispatch]);
     
     const handleExportExcel = () => {
         setIsExportModalVisible(true);
@@ -153,7 +153,7 @@ export default function PackedList() {
         setExportDateRange([]);
     };
     
-    const handlePageChange = (page, size) => {
+    const handlePageChange = useCallback((page, size) => {
         if (search) {
             // 搜索状态下的分页
             dispatch(setPageInfo({ listType: 'packedListBySearch', page: { current: page, pageSize: size } }));
@@ -163,9 +163,9 @@ export default function PackedList() {
             dispatch(setPageInfo({ listType: 'packedList', page: { current: page, pageSize: size } }));
             dispatch(fetchPackedList({ page: page - 1, size }));
         }
-    };
+    }, [dispatch, search]);
     
-    const columns = [
+    const columns = useMemo(() => [
         { title: '货物号', dataIndex: 'productId', key: 'productId' },
         { title: '会员名称', dataIndex: 'memberName', key: 'memberName' },
         { title: '货物名称', dataIndex: 'goodName', key: 'goodName' },
@@ -180,10 +180,10 @@ export default function PackedList() {
         } },
         { title: '更新时间', dataIndex: 'updatedAt', key: 'updatedAt' },
         { title: '货物状态', dataIndex: 'goodStatus', key: 'goodStatus', render: (goodStatus) => (<p style={{ color: 'green' }}>{goodStatus}</p>) },
-    ];
+    ], []);
     
     // 处理数据
-    const data = rawList.map(item => ({
+    const data = useMemo(() => rawList.map(item => ({
         key: item._id || '',
         productId: item._id || '',
         memberName: item.username || '',
@@ -196,7 +196,7 @@ export default function PackedList() {
         goodType: item.goodType || '',
         updatedAt: item.updatedAt ? moment(item.updatedAt).format('YYYY-MM-DD HH:mm:ss') : '',
         goodStatus: item.goodStatus || '',
-    }));
+    })), [rawList]);
     
     return (
         <div>

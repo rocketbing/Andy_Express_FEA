@@ -7,7 +7,7 @@ export default function UserCenter() {
     return (
         <Card 
             title="个人资料" 
-            headStyle={{ backgroundColor: '#f0f0f0' }}
+            styles={{ header: { backgroundColor: '#f0f0f0' } }}
             style={{ width: '100%', margin: '20px' }}
         >
             <p>{user.data.username}</p>
