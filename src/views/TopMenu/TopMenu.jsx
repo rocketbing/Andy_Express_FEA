@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useCallback,memo } from "react";
 import "./TopMenu.css";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsAuthenticated, selectUserName, selectUser, logout } from "../../store/authSlice";
@@ -10,7 +10,7 @@ import { DownOutlined } from '@ant-design/icons';
 import { Dropdown, Space } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-export default function TopMenu({ onToggleMobileMenu, isMobile }) {
+const TopMenu = memo(function TopMenu({ onToggleMobileMenu, isMobile }) {
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
@@ -92,4 +92,5 @@ export default function TopMenu({ onToggleMobileMenu, isMobile }) {
 
         </div>
     )
-}
+})
+export default TopMenu;

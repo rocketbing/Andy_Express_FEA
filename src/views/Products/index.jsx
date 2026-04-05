@@ -41,6 +41,10 @@ export default function Product() {
         navigate(tab.path);
     }, [navigate]);
 
+    // ✅ 使用 useMemo 稳定 context 对象引用，避免不必要的子组件重渲染
+    // 只有当 currentTab 的值真正变化时，context 对象的引用才会变化
+    const outletContext = useMemo(() => ({ currentTab }), [currentTab]);
+
     return (
         <>        <div className="product-container mb-5">
             <Row className="product-title">
@@ -59,7 +63,7 @@ export default function Product() {
                 ))}
             </Row>
         </div>
-            <Outlet context={{ currentTab }} /></>
+            <Outlet context={outletContext} /></>
 
     )
 }

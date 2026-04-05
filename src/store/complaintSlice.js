@@ -87,7 +87,6 @@ const complaintSlice = createSlice({
         const { data, pagination } = action.payload;
         state.complaintList.data = data || [];
         state.complaintList.total = pagination?.totalItems || 0;
-        state.complaintList.page = (pagination?.currentPage || 0) + 1;
         state.complaintList.size = pagination?.pageSize || 10;
         state.complaintList.isLoading = false;
         state.complaintList.error = null;

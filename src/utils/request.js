@@ -1,5 +1,30 @@
 import axios from "axios";
 import { notification } from "antd";
+
+const AUTH_PERSIST_KEY = "persist:root";
+
+function clearPersistedAuthState() {
+  const persistedRoot = localStorage.getItem(AUTH_PERSIST_KEY);
+  if (!persistedRoot) return;
+
+  try {
+    const parsed = JSON.parse(persistedRoot);
+    parsed.auth = JSON.stringify({
+      isAuthenticated: false,
+      token: null,
+      user: null,
+      isLoading: false,
+      error: null,
+      lastLoginTime: null,
+      memberList: [],
+    });
+    localStorage.setItem(AUTH_PERSIST_KEY, JSON.stringify(parsed));
+  } catch {
+    // If persisted state is corrupted, remove it to prevent stale auth loops.
+    localStorage.removeItem(AUTH_PERSIST_KEY);
+  }
+}
+
 let request = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API,
   timeout: 5000,
@@ -50,10 +75,16 @@ request.interceptors.response.use(
     let errorMessage = error.response?.data?.message || "Request Failed";
     switch (status) {
       case 401:
-        notification.error({ message: errorMessage });
         localStorage.removeItem("token");
-        window.location.hash = "#/login";
-        break;
+        clearPersistedAuthState();
+        notification.error({
+          message: errorMessage || "认证已过期，请重新登录",
+        });
+        // Use replace + full reload to avoid in-memory stale auth state.
+        window.location.replace(
+          `${window.location.origin}${window.location.pathname}#/login`
+        );
+        return Promise.reject(new Error(String(errorMessage)));
       case 400:
         errorMessage = `Bad Request: ${errorMessage}`;
         break;

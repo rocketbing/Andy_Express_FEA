@@ -59,6 +59,11 @@ export default function PackedList() {
         }
     }, [dispatch, currentPage, pageSize, search]);
     
+    // ✅ 使用 useCallback 优化：稳定函数引用，配合 CustomTab 的 React.memo
+    // CustomTab 使用了 React.memo，如果 onSearchChange 函数引用每次都变化，
+    // React.memo 的比较会失败，导致 CustomTab 不必要的重渲染
+    // 使用 useCallback 后，函数引用稳定（依赖项 dispatch 不变时），
+    // CustomTab 的 React.memo 可以正确工作，避免不必要的重渲染
     const handleSearchChange = useCallback((value) => {
         setSearch(value);
         if(value) {
@@ -153,6 +158,9 @@ export default function PackedList() {
         setExportDateRange([]);
     };
     
+    // ✅ 使用 useCallback 优化：稳定函数引用，配合 CustomTab 的 React.memo
+    // pageChange 函数引用稳定，只有当 search 或 dispatch 变化时才重新创建
+    // 这样 CustomTab 的 React.memo 可以正确比较 props，避免不必要的重渲染
     const handlePageChange = useCallback((page, size) => {
         if (search) {
             // 搜索状态下的分页
@@ -165,6 +173,10 @@ export default function PackedList() {
         }
     }, [dispatch, search]);
     
+    // ✅ 使用 useMemo 优化：稳定 columns 数组引用，配合 CustomTab 的 React.memo
+    // columns 配置是静态的，不需要每次渲染都重新创建
+    // 使用 useMemo 后，columns 引用稳定，CustomTab 的 React.memo 可以正确比较 props
+    // 如果 columns 每次都是新数组，即使内容相同，React.memo 的比较也会失败
     const columns = useMemo(() => [
         { title: '货物号', dataIndex: 'productId', key: 'productId' },
         { title: '会员名称', dataIndex: 'memberName', key: 'memberName' },
@@ -182,7 +194,10 @@ export default function PackedList() {
         { title: '货物状态', dataIndex: 'goodStatus', key: 'goodStatus', render: (goodStatus) => (<p style={{ color: 'green' }}>{goodStatus}</p>) },
     ], []);
     
-    // 处理数据
+    // ✅ 使用 useMemo 优化：只有当 rawList 变化时才重新计算 data
+    // 避免每次 PackedList 渲染时都执行 map 操作（性能开销较大）
+    // 同时稳定 data 数组引用，配合 CustomTab 的 React.memo
+    // 如果 data 每次都是新数组，即使内容相同，React.memo 的比较也会失败
     const data = useMemo(() => rawList.map(item => ({
         key: item._id || '',
         productId: item._id || '',

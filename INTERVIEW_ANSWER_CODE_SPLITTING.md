@@ -1,0 +1,9 @@
+# Code Splitting / Lazy Loading Interview Answer
+
+Currently, my project doesn't use code splitting or lazy loading yet, but it's definitely an optimization I'm planning to introduce.
+
+Our project is a backend management system with many feature modules like product management, order management, after-sales service, data analytics, and so on. In the current routing setup, all components are imported at once in the router file, which means users have to download the entire application code on the first load.
+
+If I were to implement code splitting, I would approach it from several angles. First, I would use React.lazy at the route level to lazy load the main page components, like products, orders, and data analytics - these major feature modules. This way, only the code for the module the user accesses gets loaded, rather than loading everything upfront. Second, for heavier components like the data analytics page or the email announcement management module, I would consider bundling them separately since they might have larger codebases. Also, our project uses Vite as the build tool, which already supports code splitting out of the box, and combined with React's Suspense component, we can provide a smooth loading experience. Finally, I would show a simple loading indicator during route transitions so users know content is being loaded, which improves the user experience.
+
+Overall, code splitting mainly addresses the initial load time and subsequent page navigation performance. By loading code on demand, we can significantly reduce the initial bundle size and improve the application's loading speed. For a management system with many features like ours, the impact would be quite noticeable. Although we haven't implemented it yet, it's definitely an important direction for our future performance optimizations.
